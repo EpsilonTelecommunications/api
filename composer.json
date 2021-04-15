@@ -13,8 +13,8 @@
         "email": "jason.lewis1991@gmail.com"
     }],
     "require": {
-        "php": "^7.2.5",
-        "dingo/blueprint": "^0.4",
+        "php": ">=7.2.5",
+        "dingo/blueprint": "dev-master",
         "illuminate/routing": "^7.0|^8.0",
         "illuminate/support": "^7.0|^8.0",
         "league/fractal": "^0.19"
@@ -69,5 +69,11 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "url": "https://github.com/EpsilonTelecommunications/blueprint",
+            "type": "vcs"
+        }
+    ]
 }
