@@ -3,6 +3,8 @@
 namespace Dingo\Api\Tests;
 
 use Dingo\Api\Tests\Stubs\Application7Stub;
+use Dingo\Api\Tests\Stubs\Application8Stub;
+use Dingo\Api\Tests\Stubs\Application9Stub;
 use Dingo\Api\Tests\Stubs\ApplicationStub;
 use Dingo\Api\Tests\Stubs\Application6Stub;
 use Dingo\Api\Tests\Stubs\Application58Stub;
@@ -16,16 +18,18 @@ trait ChecksLaravelVersionTrait
     {
         $contents = file_get_contents($this->installed_file_path);
         $parsed_data = json_decode($contents, true);
+        if ($parsed_data['packages']) {
+            $parsed_data = $parsed_data['packages'];
+        }
         $just_laravel = array_filter($parsed_data, function ($val) {
             if ('laravel/framework' === $val['name'] || 'laravel/lumen-framework' === $val['name']) {
                 return true;
             }
+            return false;
         });
-        $laravelVersion = array_map(function ($val) {
+        return array_map(function ($val) {
             return $val['version'];
         }, array_values($just_laravel))[0];
-
-        return $laravelVersion;
     }
 
     private function getApplicationStub()
@@ -39,7 +43,11 @@ trait ChecksLaravelVersionTrait
         $version = str_replace('v', '', $version);
 
         // Return the version stub for the right version
-        if (version_compare($version, '7.0.0', '>=')) {
+        if (version_compare($version, '9.0.0', '>=')) {
+            return new Application9Stub;
+        } elseif (version_compare($version, '8.0.0', '>=')) {
+            return new Application8Stub;
+        }elseif (version_compare($version, '7.0.0', '>=')) {
             return new Application7Stub;
         } elseif (version_compare($version, '6.0.0', '>=')) {
             return new Application6Stub;

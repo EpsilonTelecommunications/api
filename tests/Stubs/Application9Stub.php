@@ -5,7 +5,7 @@ namespace Dingo\Api\Tests\Stubs;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
 
-class ApplicationStub extends Container implements Application
+class Application9Stub extends Container implements Application
 {
     public function version()
     {
@@ -13,71 +13,6 @@ class ApplicationStub extends Container implements Application
     }
 
     public function basePath($path = '')
-    {
-        //
-    }
-
-    public function environment(...$environments)
-    {
-        return 'testing';
-    }
-
-    public function isDownForMaintenance()
-    {
-        return false;
-    }
-
-    public function registerConfiguredProviders()
-    {
-        //
-    }
-
-    public function register($provider, $options = [], $force = false)
-    {
-        //
-    }
-
-    public function runningUnitTests()
-    {
-        //
-    }
-
-    public function registerDeferredProvider($provider, $service = null)
-    {
-        //
-    }
-
-    public function getCachedCompilePath()
-    {
-        //
-    }
-
-    public function getCachedServicesPath()
-    {
-        //
-    }
-
-    public function boot()
-    {
-        //
-    }
-
-    public function booting($callback)
-    {
-        //
-    }
-
-    public function booted($callback)
-    {
-        //
-    }
-
-    public function getCachedPackagesPath()
-    {
-        //
-    }
-
-    public function runningInConsole()
     {
         //
     }
@@ -102,12 +37,62 @@ class ApplicationStub extends Container implements Application
         //
     }
 
-    public function storagePath()
+    public function storagePath($path = '')
+    {
+        //
+    }
+
+    public function environment(...$environments)
+    {
+        return 'testing';
+    }
+
+    public function runningInConsole()
+    {
+        //
+    }
+
+    public function runningUnitTests()
+    {
+        //
+    }
+
+    public function isDownForMaintenance()
+    {
+        return false;
+    }
+
+    public function registerConfiguredProviders()
+    {
+        //
+    }
+
+    public function register($provider, $options = [], $force = false)
+    {
+        //
+    }
+
+    public function registerDeferredProvider($provider, $service = null)
     {
         //
     }
 
     public function resolveProvider($provider)
+    {
+        //
+    }
+
+    public function boot()
+    {
+        //
+    }
+
+    public function booting($callback)
+    {
+        //
+    }
+
+    public function booted($callback)
     {
         //
     }
@@ -152,7 +137,17 @@ class ApplicationStub extends Container implements Application
         //
     }
 
+    public function terminating($callback)
+    {
+        //
+    }
+
     public function terminate()
+    {
+        //
+    }
+
+    public function maintenanceMode()
     {
         //
     }

@@ -41,7 +41,10 @@ class ResponseTest extends BaseTestCase
 
         $response = new Response($object);
 
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('Symfony\Component\HttpFoundation\Response::getContent(): Return value must be of type string|false, null returned');
         $this->assertNull($response->getContent());
+
         $this->assertSame($object, $response->getOriginalContent());
     }
 

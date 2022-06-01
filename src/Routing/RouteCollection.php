@@ -5,6 +5,7 @@ namespace Dingo\Api\Routing;
 use Countable;
 use ArrayIterator;
 use IteratorAggregate;
+use Traversable;
 
 class RouteCollection implements Countable, IteratorAggregate
 {
@@ -72,9 +73,9 @@ class RouteCollection implements Countable, IteratorAggregate
      *
      * @return \Dingo\Api\Routing\Route|null
      */
-    public function getByName($name)
+    public function getByName($name): ?Route
     {
-        return isset($this->names[$name]) ? $this->names[$name] : null;
+        return $this->names[$name] ?? null;
     }
 
     /**
@@ -84,9 +85,9 @@ class RouteCollection implements Countable, IteratorAggregate
      *
      * @return \Dingo\Api\Routing\Route|null
      */
-    public function getByAction($action)
+    public function getByAction($action): ?Route
     {
-        return isset($this->actions[$action]) ? $this->actions[$action] : null;
+        return $this->actions[$action] ?? null;
     }
 
     /**
@@ -102,9 +103,9 @@ class RouteCollection implements Countable, IteratorAggregate
     /**
      * Get an iterator for the items.
      *
-     * @return \ArrayIterator
+     * @return Traversable
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->getRoutes());
     }
@@ -114,7 +115,7 @@ class RouteCollection implements Countable, IteratorAggregate
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->getRoutes());
     }
