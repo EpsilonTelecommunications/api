@@ -718,7 +718,7 @@ class Router
             }
         }
 
-        return is_null($version) ? $collections : $collections[$version];
+        return is_null($version) ? collect($collections) : $collections[$version];
     }
 
     /**
