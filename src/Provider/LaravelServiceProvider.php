@@ -203,7 +203,7 @@ class LaravelServiceProvider extends DingoServiceProvider
         $form->setJson($current->json());
 
         try {
-            if ($session = $current->getSession()) {
+            if ($session = $current->session()) {
                 $form->setLaravelSession($session);
             }
         } catch (SessionNotFoundException $exception) {
