@@ -49,11 +49,11 @@ class Binding
      * @param \Illuminate\Container\Container $container
      * @param mixed                           $resolver
      * @param array                           $parameters
-     * @param \Closure                        $callback
+     * @param \Closure|null                   $callback
      *
      * @return void
      */
-    public function __construct(Container $container, $resolver, array $parameters = [], Closure $callback = null)
+    public function __construct(Container $container, $resolver, array $parameters = [], ?Closure $callback = null)
     {
         $this->container = $container;
         $this->resolver = $resolver;
