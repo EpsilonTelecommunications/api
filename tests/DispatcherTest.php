@@ -21,6 +21,8 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\CallableDispatcher;
+use Illuminate\Routing\Contracts\CallableDispatcher as CallableDispatcherContract;
 use Illuminate\Support\Facades\Request as RequestFacade;
 use Mockery as m;
 use Symfony\Component\HttpKernel\Exception\GoneHttpException;
@@ -67,7 +69,7 @@ class DispatcherTest extends BaseTestCase
 
         $this->transformerFactory = new TransformerFactory($this->container, new TransformerStub);
 
-        $this->adapter = new RoutingAdapterStub;
+        $this->adapter = new RoutingAdapterStub($this->container);
         $this->exception = m::mock(Handler::class);
         $this->router = new Router($this->adapter, $this->exception, $this->container, null, null);
 
@@ -75,6 +77,7 @@ class DispatcherTest extends BaseTestCase
         $this->dispatcher = new Dispatcher($this->container, new Filesystem, $this->router, $this->auth);
 
         app()->instance(\Illuminate\Routing\Router::class, $this->adapter);
+        $this->container->singleton(CallableDispatcherContract::class, CallableDispatcher::class);
 
         $this->dispatcher->setSubtype('api');
         $this->dispatcher->setStandardsTree('vnd');
@@ -212,7 +215,6 @@ class DispatcherTest extends BaseTestCase
         $this->router->version('v1', function () use ($user) {
             $this->router->get('test', function () use ($user) {
                 $this->assertSame($user, $this->auth->user());
-                return 'test';
             });
         });
 
@@ -268,19 +270,16 @@ class DispatcherTest extends BaseTestCase
                 $this->assertSame('bar', $this->router->getCurrentRequest()->input('foo'));
                 $this->dispatcher->with(['foo' => 'baz'])->post('api/bar');
                 $this->assertSame('bar', $this->router->getCurrentRequest()->input('foo'));
-                return 'foo';
             });
 
             $this->router->post('bar', function () {
                 $this->assertSame('baz', $this->router->getCurrentRequest()->input('foo'));
                 $this->dispatcher->with(['foo' => 'bazinga'])->post('api/baz');
                 $this->assertSame('baz', $this->router->getCurrentRequest()->input('foo'));
-                return 'bar';
             });
 
             $this->router->post('baz', function () {
                 $this->assertSame('bazinga', $this->router->getCurrentRequest()->input('foo'));
-                return 'baz';
             });
         });
 
@@ -294,19 +293,16 @@ class DispatcherTest extends BaseTestCase
                 $this->assertSame('foo', $this->router->getCurrentRoute()->getName());
                 $this->dispatcher->post('bar');
                 $this->assertSame('foo', $this->router->getCurrentRoute()->getName());
-                return 'foo';
             }]);
 
             $this->router->post('bar', ['as' => 'bar', function () {
                 $this->assertSame('bar', $this->router->getCurrentRoute()->getName());
                 $this->dispatcher->post('baz');
                 $this->assertSame('bar', $this->router->getCurrentRoute()->getName());
-                return 'bar';
             }]);
 
             $this->router->post('baz', ['as' => 'bazinga', function () {
                 $this->assertSame('bazinga', $this->router->getCurrentRoute()->getName());
-                return 'baz';
             }]);
         });
 
@@ -318,12 +314,10 @@ class DispatcherTest extends BaseTestCase
         $this->router->version('v1', function () {
             $this->router->post('foo', function () {
                 $this->assertSame('jason', $this->router->getCurrentRequest()->json('username'));
-                return 'foo';
             });
 
             $this->router->post('bar', function () {
                 $this->assertSame('mat', $this->router->getCurrentRequest()->json('username'));
-                return 'bar';
             });
         });
 

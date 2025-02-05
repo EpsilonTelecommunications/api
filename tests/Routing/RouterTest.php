@@ -13,7 +13,7 @@ use Illuminate\Container\Container;
 use Mockery as m;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class RouterTest extends Adapter\BaseAdapterTest
+class RouterTestAbstract extends Adapter\BaseAdapterTestAbstract
 {
     public function getAdapterInstance()
     {
@@ -34,7 +34,6 @@ class RouterTest extends Adapter\BaseAdapterTest
                     $this->router->getCurrentRoute()->getScopes(),
                     'Router did not merge string based group scopes with route based array scopes.'
                 );
-                return 'foo';
             }]);
 
             $this->router->get('baz', function () {
@@ -43,7 +42,6 @@ class RouterTest extends Adapter\BaseAdapterTest
                     $this->router->getCurrentRoute()->getScopes(),
                     'Router did not merge string based group scopes with route.'
                 );
-                return 'baz';
             });
         });
 
