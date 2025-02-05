@@ -3,6 +3,7 @@
 namespace Dingo\Api\Http;
 
 use ArrayObject;
+use stdClass;
 use Illuminate\Support\Str;
 use UnexpectedValueException;
 use Illuminate\Http\JsonResponse;
@@ -32,6 +33,13 @@ class Response extends IlluminateResponse
      * @var \Dingo\Api\Transformer\Binding
      */
     protected $binding;
+
+    /**
+     * Intermedia content that we are working on. The result content should be a string (symfony)
+     * )
+     * @var mixed Content with which we are working
+     */
+    protected $workingContent;
 
     /**
      * Array of registered formatters.
@@ -128,12 +136,12 @@ class Response extends IlluminateResponse
      */
     public function morph($format = 'json')
     {
-        $content = $this->getOriginalContent() ?? '';
+        $this->workingContent = $this->getOriginalContent() ?? '';
 
         $this->fireMorphingEvent();
 
-        if (isset(static::$transformer) && static::$transformer->transformableResponse($content)) {
-            $this->content = static::$transformer->transform($content);
+        if (isset(static::$transformer) && static::$transformer->transformableResponse($this->workingContent)) {
+            $this->workingContent = static::$transformer->transform($this->workingContent);
         }
 
         $formatter = static::getFormatter($format);
@@ -142,19 +150,29 @@ class Response extends IlluminateResponse
 
         $defaultContentType = $this->headers->get('Content-Type');
 
-        $this->headers->set('Content-Type', $formatter->getContentType());
+        // If we have no content, we don't want to set this header, as it will be blank
+        $contentType = $formatter->getContentType();
+        if (! empty($contentType)) {
+            $this->headers->set('Content-Type', $formatter->getContentType());
+        }
 
         $this->fireMorphedEvent();
 
-        if ($content instanceof EloquentModel) {
-            $this->content = $formatter->formatEloquentModel($content);
-        } elseif ($content instanceof EloquentCollection) {
-            $this->content = $formatter->formatEloquentCollection($content);
-        } elseif (is_array($content) || $content instanceof ArrayObject || $content instanceof Arrayable) {
-            $this->content = $formatter->formatArray($content);
+        if ($this->workingContent instanceof EloquentModel) {
+            $this->workingContent = $formatter->formatEloquentModel($this->workingContent);
+        } elseif ($this->workingContent instanceof EloquentCollection) {
+            $this->workingContent = $formatter->formatEloquentCollection($this->workingContent);
+        } elseif (is_array($this->workingContent) || $this->workingContent instanceof ArrayObject || $this->workingContent instanceof Arrayable) {
+            $this->workingContent = $formatter->formatArray($this->workingContent);
+        } elseif ($this->workingContent instanceof stdClass) {
+            $this->workingContent = $formatter->formatArray((array) $this->workingContent);
         } else {
-            $this->headers->set('Content-Type', $defaultContentType);
+            if (! empty($defaultContentType)) {
+                $this->headers->set('Content-Type', $defaultContentType);
+            }
         }
+
+        $this->content = $this->workingContent;
 
         return $this;
     }
@@ -170,7 +188,7 @@ class Response extends IlluminateResponse
             return;
         }
 
-        static::$events->dispatch(new ResponseWasMorphed($this, $this->content));
+        static::$events->dispatch(new ResponseWasMorphed($this, $this->workingContent));
     }
 
     /**
@@ -184,7 +202,7 @@ class Response extends IlluminateResponse
             return;
         }
 
-        static::$events->dispatch(new ResponseIsMorphing($this, $this->content));
+        static::$events->dispatch(new ResponseIsMorphing($this, $this->workingContent));
     }
 
     /**
